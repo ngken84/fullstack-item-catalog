@@ -1,0 +1,101 @@
+.form-error {
+	color: red;
+	margin-bottom: 16px;
+	padding-left: 20px;
+}
+
+.star-shadow {
+	text-shadow: 2px -2px 10px goldenrod, 2px -2px 10px goldenrod;
+	color: gold;
+}
+
+.like-style {
+	font-size: 15px;
+	color: firebrick;
+	display: inline-block;
+	border: 1px solid grey;
+	background-color: white;
+	border-radius: 15px 50px 50px 15px;
+	padding: 0px 15px 0px 10px;
+}
+
+.no-style-button {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	font-family: inherit;
+}
+
+.user-icon {
+	display: inline-block;
+	border: 1px solid grey;
+	font-size: 20px;
+	border-radius: 7px;
+	padding: 0px 4px;
+	margin-right: 6px;
+	color: whitesmoke;
+	background-color: darkgrey;
+}
+
+.comment-author {
+	margin-bottom: 2px;
+}
+
+.site-header, .site-header:hover, .site-header:visited, .site-header:active {
+	display: inline-block;
+	font-family: 'Teko', sans-serif;
+	font-size: 1.1em;
+	text-decoration: none;
+	color: #CED2B6;
+	margin-bottom: 0.2em;
+}
+
+.page-header {
+	padding: 0;
+	margin: 0;
+	background-color: #400416;
+}
+
+.page-body {
+	padding-top: 2.4em;
+}
+
+.my-nav-bar, .my-nav-bar a {
+	color: #CED2B6;
+}
+
+.right-menu {
+	background-color: rgba(239,241,225,.7);
+	color: #400416;
+	border-radius: 20px;
+	padding-bottom:10em;
+}
+
+.credit-link {
+	position:fixed;
+	bottom:10px;
+	right:10px;
+	font-size: 0.5em;
+}
+
+body {
+	background-image: url('../img/background.jpg');
+	background-size: cover;
+}
+
+.transparent-back {
+	min-height: 80%;
+	padding-bottom: 20em;
+	background-color: rgba(255,255,255,.8);
+	border-radius: 0px 0px 25px 25px;
+}
+
+.img-icon {
+	width: 23px;
+	height: 23px;
+}
+
+.comment {
+	padding: 12px;
+}

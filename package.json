@@ -1,0 +1,26 @@
+{
+  "name": "catalog",
+  "version": "1.0.0",
+  "description": "Fullstack Nanodegree project #7 to create a catalog that allows CRUD and user sign authentication using Google Plus",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngken84/fullstack-item-catalog.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ngken84/fullstack-item-catalog/issues"
+  },
+  "homepage": "https://github.com/ngken84/fullstack-item-catalog#readme",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-concat-css": "^0.3.1",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0"
+  }
+}

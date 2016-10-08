@@ -6,8 +6,21 @@
 	<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
 	<script>
 		function signInCallBack(authResult) {
-
+			if(authResult['code']){
+				$('#signinButton').attr('style', 'display: none');
+				$.ajax({
+					type: 'POST',
+					url:'/gconnect?state={{forgery_token}}',
+					processData: false,
+					contentType: 'application/octet-stream; charset=utf-8',
+					data: authResult['code'],
+					success: function(result) {
+						console.log(result);
+					}
+				});
+			}
 		}
+		</script>
 	{% endif %}
 {% endblock %}
 {% block body %}

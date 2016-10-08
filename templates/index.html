@@ -2,6 +2,13 @@
 {% block title %}Index{% endblock %}
 {% block head %}
 	{{ super() }}
+	{% if not logged_in %}
+	<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+	<script>
+		function signInCallBack(authResult) {
+
+		}
+	{% endif %}
 {% endblock %}
 {% block body %}
 	<div class="container-fluid site-banner">
@@ -9,10 +16,25 @@
 			<div class="col-md-4 col-sm-5 col-xs-6">
 				<h1>Item Catalog</h1>
 			</div>
+
 			<div class="col-md-8 col-sm-7 col-xs-6 text-right">
+				{% if not logged_in %}
+				<div id="signinButton" class="login-button">
+					<span class="g-signin"
+						data-scope="openid email"
+						data-clientid="743079276547-r2scj60p6u973is9f96n4l284s6aprhs.apps.googleusercontent.com"
+						data-redirecturi="postmessage"
+						data-accesstype="offline"
+						data-cookiepolicy="single_host_origin"
+						data-callback="signInCallBack"
+						data-approvalprompt="force">
+					</span>
+				</div>
+				{% else %}
 				<button class="btn">
-					Login
+					Log out
 				</button>
+				{% endif %}
 			</div>
 		</div>
 	</div>

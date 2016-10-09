@@ -8,6 +8,8 @@
 		function signInCallBack(authResult) {
 			if(authResult['code']){
 				$('#signinButton').attr('style', 'display: none');
+				console.log('hello')
+				console.log(authResult['code'])
 				$.ajax({
 					type: 'POST',
 					url:'/gconnect?state={{forgery_token}}',
@@ -15,6 +17,7 @@
 					contentType: 'application/octet-stream; charset=utf-8',
 					data: authResult['code'],
 					success: function(result) {
+						console.log("hello from success")
 						console.log(result);
 					}
 				});
@@ -29,13 +32,12 @@
 			<div class="col-md-4 col-sm-5 col-xs-6">
 				<h1>Item Catalog</h1>
 			</div>
-
 			<div class="col-md-8 col-sm-7 col-xs-6 text-right">
 				{% if not logged_in %}
 				<div id="signinButton" class="login-button">
 					<span class="g-signin"
 						data-scope="openid email"
-						data-clientid="743079276547-r2scj60p6u973is9f96n4l284s6aprhs.apps.googleusercontent.com"
+						data-clientid="{{client_id}}"
 						data-redirecturi="postmessage"
 						data-accesstype="offline"
 						data-cookiepolicy="single_host_origin"

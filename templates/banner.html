@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+	{{ super() }}
+	{% if not logged_in %}
+	<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+	<script>
+		function signInCallBack(authResult) {
+			if(authResult['code']){
+				$('#signinButton').attr('style', 'display: none');
+				console.log('hello')
+				console.log(authResult['code'])
+				$.ajax({
+					type: 'POST',
+					url: '/gconnect?state={{forgery_token}}',
+					processData: false,
+					contentType: 'application/octet-stream; charset=utf-8',
+					data: authResult['code'],
+					success: function(result) {
+						setTimeout(function() {
+							window.location.reload(false);
+						}, 4000);
+					}
+				});
+			}
+		}
+		</script>
+	{% endif %}
+{% endblock %}
+{% block body %}
+	<div class="container-fluid site-banner">
+		<div class="container">
+			<div class="col-md-4 col-sm-5 col-xs-6">
+				<h1>Item Catalog</h1>
+			</div>
+			<div class="col-md-8 col-sm-7 col-xs-6 text-right">
+				{% if not logged_in %}
+				<div id="signinButton" class="login-button">
+					<span class="g-signin"
+						data-scope="openid email"
+						data-clientid="{{client_id}}"
+						data-redirecturi="postmessage"
+						data-accesstype="offline"
+						data-cookiepolicy="single_host_origin"
+						data-callback="signInCallBack"
+						data-approvalprompt="force">
+					</span>
+				</div>
+				{% else %}
+				<ul class="list-inline">
+					<li><img src="{{picture}}"/></li>
+					<li>{{name}}</li>
+					<li><button class="btn" onclick="signout()">Log out</button></li>
+				</ul>
+				<script>
+					function signout() {
+						$.ajax({
+							type: 'GET',
+							url: '/gdisconnect',
+							success: function(result) {
+								setTimeout(function() {
+									window.location.reload(false);
+								}, 1000)
+							}
+						})
+					}
+				</script>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	{% block content %}
+	{% endblock %}
+{% endblock %}

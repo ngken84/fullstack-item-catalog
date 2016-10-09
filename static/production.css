@@ -7347,6 +7347,7 @@ button.close {
 /*# sourceMappingURL=bootstrap.css.map */
 .site-banner {
 	background-color: #1A324B;
+	margin-bottom: 20px;
 }
 
 .site-banner h1 {
@@ -7358,8 +7359,19 @@ button.close {
 	margin: 10px 0px;
 }
 
+.site-banner ul {
+	margin-top: 10px;
+}
+
+.site-banner img {
+	height: 36px;
+}
+
+.site-banner li {
+	color: white;
+}
+
 .site-banner button {
-	margin: 10px 0px;
 	background-color: #E82C0C;
 	color: white;
 }

@@ -41,7 +41,14 @@ def MainPage():
 	token = generate_forgery_token()
 	login_session['state'] = token
 	is_logged_in = 'credentials' in login_session
+	picture = None
+	name = None
+	if is_logged_in:
+		picture = login_session['picture']
+		name = login_session['name']
 	return render_template('index.html',
+							picture=picture,
+							name=name,
 							logged_in=is_logged_in,
 							client_id=CLIENT_ID,
 							forgery_token=token)
@@ -95,6 +102,8 @@ def GoogleConnect():
 	answer = requests.get(userinfo_url, params=params)
 	data = json.loads(answer.text)
 
+	print(data["picture"]);
+
 	login_session['username'] = data["name"]
 	login_session['picture'] = data["picture"]
 	login_session['email'] = data["email"]
@@ -109,7 +118,7 @@ def GoogleDisconnect():
 	# Only disconnect if the user is logged in
 	if 'credentials' not in login_session:
 		return generate_json_response('Current user not connected.', 401)
-	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['credentials']
 	h = httplib2.Http()
 	result = h.request(url, 'GET')[0]
 	if result['status'] == '200':

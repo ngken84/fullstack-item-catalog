@@ -17,8 +17,9 @@
 					contentType: 'application/octet-stream; charset=utf-8',
 					data: authResult['code'],
 					success: function(result) {
-						console.log("hello from success")
-						console.log(result);
+						setTimeout(function() {
+							window.location.reload(false);
+						}, 4000);
 					}
 				});
 			}

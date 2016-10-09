@@ -11,6 +11,12 @@
 	margin: 10px 0px;
 }
 
+.site-banner button {
+	margin: 10px 0px;
+	background-color: #E82C0C;
+	color: white;
+}
+
 body {
 	background-color: #F2F2F2;
 }

@@ -22,7 +22,6 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-
 def generate_forgery_token():
 	""" generates and returns a 32 character string of letters and numbers to
 	be used as an anti forgery token"""
@@ -170,7 +169,31 @@ def NewCategory():
 								client_id=CLIENT_ID,
 								category_name='',
 								category_description=desc,
-								name_error='Please enter a subject.')
+								name_error='Please enter a name.')
+			existing_cat = session.query(Category).filter(Category.name==name).first()
+			if len(name) > 40:
+				return render_template('newcategory.html',
+								picture=login_session['picture'],
+								name=login_session['name'],
+								logged_in=True,
+								client_id=CLIENT_ID,
+								category_name=name,
+								category_description=desc,
+								name_error='Category name must be under 40 characters')
+			if existing_cat:
+				return render_template('newcategory.html',
+								picture=login_session['picture'],
+								name=login_session['name'],
+								logged_in=True,
+								client_id=CLIENT_ID,
+								category_name=name,
+								category_description=desc,
+								name_error='Category already exists')
+			new_category = Category(name=name,
+									description=desc,
+									user_id=login_session['id'])
+			session.add(new_category)
+			session.commit()
 			return redirect('/', 302)
 
 

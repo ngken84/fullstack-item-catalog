@@ -5,10 +5,28 @@
 	<div class="container">
 		<div class="col-md-3">
 			<div class="well">
+				<h3>Categories</h3>
+				<ul class="list-unstyled">
+					{% for category in categories %}
+					<li>
+						{{category.name}}
+					</li>
+					{% endfor %}
+					{% if not categories %}
+					<li>
+						No categories yet!
+					</li>
+					{% endif %}
+				</ul>
+				{% if logged_in %}
+				<a class="btn btn-default text-center" href="/newcategory">New Category</a>
+				{% endif %}
 			</div>
 		</div>
 		<div class="col-md-9">
 			<div class="well">
+				<h3>Welcome</h3>
+
 			</div>
 		</div>
 	</div>

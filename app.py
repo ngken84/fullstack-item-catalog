@@ -1,4 +1,4 @@
-from flask import Flask, render_template, make_response, request
+from flask import Flask, render_template, make_response, request, redirect
 from flask import session as login_session
 app = Flask(__name__)
 
@@ -26,8 +26,11 @@ session = DBSession()
 def generate_forgery_token():
 	""" generates and returns a 32 character string of letters and numbers to
 	be used as an anti forgery token"""
-	return ''.join(random.choice(string.ascii_uppercase + string.digits)
+	token = ''.join(random.choice(string.ascii_uppercase + string.digits)
 		for x in range(32))
+	login_session['state'] = token
+	return token
+
 
 def generate_json_response(text, code):
 	""" generates and returns a json response with text and code"""
@@ -39,10 +42,11 @@ def generate_json_response(text, code):
 @app.route('/')
 def MainPage():
 	token = generate_forgery_token()
-	login_session['state'] = token
+
 	is_logged_in = 'credentials' in login_session
 	picture = None
 	name = None
+	categories = session.query(Category).all()
 	if is_logged_in:
 		picture = login_session['picture']
 		name = login_session['name']
@@ -51,6 +55,7 @@ def MainPage():
 							name=name,
 							logged_in=is_logged_in,
 							client_id=CLIENT_ID,
+							categories=categories,
 							forgery_token=token)
 
 @app.route('/gconnect', methods=['POST'])
@@ -133,6 +138,22 @@ def GoogleDisconnect():
 		return generate_json_response('Failed to revoke token for given user.',
 			400)
 
+
+@app.route("/newcategory", methods=['GET', 'POST'])
+def NewCategory():
+	if 'credentials' not in login_session:
+		return redirect('/', 302)
+	else:
+		if request.method == 'GET':
+			return render_template('newcategory.html',
+								picture=login_session['picture'],
+								name=login_session['name'],
+								logged_in=True,
+								client_id=CLIENT_ID,
+								category_name='',
+								category_description='')
+		else:
+			return redirect('/', 302)
 
 
 

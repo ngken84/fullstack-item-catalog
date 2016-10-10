@@ -107,13 +107,19 @@ def GoogleConnect():
 	answer = requests.get(userinfo_url, params=params)
 	data = json.loads(answer.text)
 
-	print(data["picture"]);
-
 	login_session['username'] = data["name"]
 	login_session['picture'] = data["picture"]
 	login_session['email'] = data["email"]
 	login_session['name'] = data["name"]
 
+	user = session.query(User).filter(User.email==data["email"], User.service=='Google').first()
+	if not user:
+		new_user = User(email=data['email'], service='Google')
+		session.add(new_user)
+		session.commit()
+		login_session['id'] = new_user.id
+	else:
+		login_session['id'] = user.id
 	return generate_json_response('Success', 200)
 
 
@@ -151,8 +157,20 @@ def NewCategory():
 								logged_in=True,
 								client_id=CLIENT_ID,
 								category_name='',
-								category_description='')
+								category_description='',
+								name_error=None)
 		else:
+			name = request.form['categoryname']
+			desc = request.form['description']
+			if not name:
+				return render_template('newcategory.html',
+								picture=login_session['picture'],
+								name=login_session['name'],
+								logged_in=True,
+								client_id=CLIENT_ID,
+								category_name='',
+								category_description=desc,
+								name_error='Please enter a subject.')
 			return redirect('/', 302)
 
 

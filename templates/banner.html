@@ -8,11 +8,9 @@
 		function signInCallBack(authResult) {
 			if(authResult['code']){
 				$('#signinButton').attr('style', 'display: none');
-				console.log('hello')
-				console.log(authResult['code'])
 				$.ajax({
 					type: 'POST',
-					url: '/gconnect?state={{forgery_token}}',
+					url: '{{url_for('GoogleConnect', state=forgery_token)}}',
 					processData: false,
 					contentType: 'application/octet-stream; charset=utf-8',
 					data: authResult['code'],
@@ -56,7 +54,7 @@
 					function signout() {
 						$.ajax({
 							type: 'GET',
-							url: '/gdisconnect',
+							url: '{{url_for('GoogleDisconnect')}}',
 							success: function(result) {
 								setTimeout(function() {
 									window.location.reload(false);

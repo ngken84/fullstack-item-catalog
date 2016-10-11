@@ -111,7 +111,8 @@ def GoogleConnect():
 	login_session['email'] = data["email"]
 	login_session['name'] = data["name"]
 
-	user = session.query(User).filter(User.email==data["email"], User.service=='Google').first()
+	user = session.query(User).filter(User.email==data["email"],
+		User.service=='Google').first()
 	if not user:
 		new_user = User(email=data['email'], service='Google')
 		session.add(new_user)
@@ -128,7 +129,8 @@ def GoogleDisconnect():
 	# Only disconnect if the user is logged in
 	if 'credentials' not in login_session:
 		return generate_json_response('Current user not connected.', 401)
-	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['credentials']
+	url = ('https://accounts.google.com/o/oauth2/revoke?token=%s'
+		% login_session['credentials'])
 	h = httplib2.Http()
 	result = h.request(url, 'GET')[0]
 	if result['status'] == '200':
@@ -170,7 +172,8 @@ def NewCategory():
 								category_name='',
 								category_description=desc,
 								name_error='Please enter a name.')
-			existing_cat = session.query(Category).filter(Category.name==name).first()
+			existing_cat = (session.query(Category)
+				.filter(Category.name==name).first())
 			if len(name) > 40:
 				return render_template('newcategory.html',
 								picture=login_session['picture'],
@@ -179,7 +182,8 @@ def NewCategory():
 								client_id=CLIENT_ID,
 								category_name=name,
 								category_description=desc,
-								name_error='Category name must be under 40 characters')
+								name_error=
+									'Category name must be under 40 characters')
 			if existing_cat:
 				return render_template('newcategory.html',
 								picture=login_session['picture'],
@@ -197,6 +201,10 @@ def NewCategory():
 			return redirect('/', 302)
 
 
+@app.route('/category/<int:category_id>')
+def CategoryPage(category_id):
+	print(category_id)
+	return redirect('/', 302)
 
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"
 

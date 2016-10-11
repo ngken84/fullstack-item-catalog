@@ -9,7 +9,7 @@
 				<ul class="list-unstyled">
 					{% for category in categories %}
 					<li>
-						{{category.name}}
+						<a href="/category/{{category.id}}">{{category.name}}</a>
 					</li>
 					{% endfor %}
 					{% if not categories %}

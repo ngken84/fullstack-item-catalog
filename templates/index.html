@@ -9,7 +9,7 @@
 				<ul class="list-unstyled">
 					{% for category in categories %}
 					<li>
-						<a href="/category/{{category.id}}">{{category.name}}</a>
+						<a href="{{url_for('CategoryPage', category_id=category.id)}}">{{category.name}}</a>
 					</li>
 					{% endfor %}
 					{% if not categories %}
@@ -19,7 +19,7 @@
 					{% endif %}
 				</ul>
 				{% if logged_in %}
-				<a class="btn btn-default text-center" href="/newcategory">New Category</a>
+				<a class="btn btn-default text-center" href="{{url_for('NewCategory')}}">New Category</a>
 				{% endif %}
 			</div>
 		</div>

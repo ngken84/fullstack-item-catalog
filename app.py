@@ -22,6 +22,21 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+def get_all_categories():
+	"""Retrieves all categories in database"""
+	return session.query(Category).all()
+
+def get_category_by_id(id):
+	"""Retrieves a category by id"""
+	return session.query(Category).filter(id==id).first()
+
+def get_user_details():
+	""" Retrieves the user's details if they are logged in"""
+	is_logged_in = 'credentials' in login_session
+	if is_logged_in:
+		return is_logged_in, login_session['name'], login_session['picture']
+	return is_logged_in, None, None
+
 def generate_forgery_token():
 	""" generates and returns a 32 character string of letters and numbers to
 	be used as an anti forgery token"""
@@ -41,14 +56,8 @@ def generate_json_response(text, code):
 @app.route('/')
 def MainPage():
 	token = generate_forgery_token()
-
-	is_logged_in = 'credentials' in login_session
-	picture = None
-	name = None
-	categories = session.query(Category).all()
-	if is_logged_in:
-		picture = login_session['picture']
-		name = login_session['name']
+	is_logged_in, name, picture = get_user_details()
+	categories = get_all_categories()
 	return render_template('index.html',
 							picture=picture,
 							name=name,
@@ -203,7 +212,18 @@ def NewCategory():
 
 @app.route('/category/<int:category_id>')
 def CategoryPage(category_id):
-	print(category_id)
+	category = get_category_by_id(category_id)
+	if category:
+		is_logged_in, name, picture = get_user_details()
+		categories = get_all_categories()
+		return render_template('category.html',
+								client_id=CLIENT_ID,
+								picture=picture,
+								name=name,
+								forgery_token=generate_forgery_token(),
+								logged_in=is_logged_in,
+								curr_category=category,
+								categories=categories)
 	return redirect('/', 302)
 
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"

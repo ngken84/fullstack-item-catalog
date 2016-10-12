@@ -1,0 +1,20 @@
+{% macro categorybar(categories, logged_in) %}
+	<div class="well">
+		<h3>Categories</h3>
+		<ul class="list-unstyled">
+			{% for category in categories %}
+			<li>
+				<a href="{{url_for('CategoryPage', category_id=category.id)}}">{{category.name}}</a>
+			</li>
+			{% endfor %}
+			{% if not categories %}
+			<li>
+				No categories yet!
+			</li>
+			{% endif %}
+		</ul>
+		{% if logged_in %}
+		<a class="btn btn-default text-center" href="{{url_for('NewCategory')}}">New Category</a>
+		{% endif %}
+	</div>
+{% endmacro %}

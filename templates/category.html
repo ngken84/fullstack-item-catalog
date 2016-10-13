@@ -32,7 +32,7 @@
 					{% endfor %}
 				</div>
 				{% if logged_in %}
-				<a href="#" class="btn btn-default">Add New Item</a>
+				<a href="{{url_for('NewItem')}}" class="btn btn-default">Add New Item</a>
 				{% endif %}
 			</div>
 		</div>

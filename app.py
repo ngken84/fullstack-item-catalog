@@ -236,6 +236,22 @@ def CategoryPage(category_id):
 								categories=categories)
 	return redirect('/', 302)
 
+
+@app.route('/newitem', methods=['GET', 'POST'])
+def NewItem():
+	if 'credentials' not in login_session:
+		return redirect('/', 302)
+	else:
+		if request.method == 'GET':
+			return render_template('newitem.html',
+								picture=login_session['picture'],
+								name=login_session['name'],
+								logged_in=True,
+								client_id=CLIENT_ID,
+								item_name='',
+								item_description='',
+								name_error=None)
+
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"
 
 if __name__ == '__main__':

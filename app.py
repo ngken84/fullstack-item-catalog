@@ -30,6 +30,14 @@ def get_category_by_id(id):
 	"""Retrieves a category by id"""
 	return session.query(Category).filter(id==id).first()
 
+def get_all_items():
+	"""Retrieves all sub-items in the database"""
+	return session.query(CategorySubItem).all()
+
+def get_item_by_id(id):
+	"""Retrieves sub-item by id"""
+	return session.query(CategorySubItem).filter(id==id).first()
+
 def get_user_details():
 	""" Retrieves the user's details if they are logged in"""
 	is_logged_in = 'credentials' in login_session
@@ -216,6 +224,7 @@ def CategoryPage(category_id):
 	if category:
 		is_logged_in, name, picture = get_user_details()
 		categories = get_all_categories()
+		items = get_all_items()
 		return render_template('category.html',
 								client_id=CLIENT_ID,
 								picture=picture,
@@ -223,6 +232,7 @@ def CategoryPage(category_id):
 								forgery_token=generate_forgery_token(),
 								logged_in=is_logged_in,
 								curr_category=category,
+								items=items,
 								categories=categories)
 	return redirect('/', 302)
 

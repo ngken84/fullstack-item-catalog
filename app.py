@@ -243,6 +243,10 @@ def NewItem():
 		return redirect('/', 302)
 	else:
 		if request.method == 'GET':
+			categories = get_all_categories()
+			sel_category = request.args.get('category')
+			if not sel_category:
+				sel_category = categories[0].id
 			return render_template('newitem.html',
 								picture=login_session['picture'],
 								name=login_session['name'],
@@ -250,7 +254,9 @@ def NewItem():
 								client_id=CLIENT_ID,
 								item_name='',
 								item_description='',
-								name_error=None)
+								name_error=None,
+								categories=categories,
+								sel_category=sel_category)
 
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"
 

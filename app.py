@@ -28,15 +28,16 @@ def get_all_categories():
 
 def get_category_by_id(id):
 	"""Retrieves a category by id"""
-	return session.query(Category).filter(id==id).first()
+	return session.query(Category).filter(Category.id==id).first()
 
-def get_all_items():
+def get_all_items_by_category(category):
 	"""Retrieves all sub-items in the database"""
-	return session.query(CategorySubItem).all()
+	return (session.query(CategorySubItem)
+				.filter(CategorySubItem.category_id==category).all())
 
 def get_item_by_id(id):
 	"""Retrieves sub-item by id"""
-	return session.query(CategorySubItem).filter(id==id).first()
+	return session.query(CategorySubItem).filter(CategorySubItem.id==id).first()
 
 def get_user_details():
 	""" Retrieves the user's details if they are logged in"""
@@ -225,7 +226,7 @@ def CategoryPage(category_id):
 	if category:
 		is_logged_in, name, picture = get_user_details()
 		categories = get_all_categories()
-		items = get_all_items()
+		items = get_all_items_by_category(category_id)
 		return render_template('category.html',
 								client_id=CLIENT_ID,
 								picture=picture,

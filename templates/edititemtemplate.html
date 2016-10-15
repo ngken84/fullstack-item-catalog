@@ -1,0 +1,56 @@
+{% extends "banner.html" %}
+
+{% block content %}
+	<div class="container">
+		<div class="col-md-12">
+			<div class="well">
+				<h3 class="text-center">{% block pageheader %}{% endblock %}</h2>
+					<br>
+				<form class="form-horizontal" method="post">
+					<div class="form-group{% if name_error %} has-error{% endif %}">
+						<label for="itemname" class="col-sm-2 control-label">Name</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" id="itemname" placeholder="Item Name" name="itemname" value="{{item_name}}">
+						</div>
+					</div>
+					{% if name_error %}
+					<div class="col-sm-offset-2 col-sm-9 alert alert-danger" role="alert">
+						{{name_error}}
+					</div>
+					{% endif %}
+					<div class="form-group {% if cat_error %}has-error{% endif %}">
+						<label for="category" class="col-sm-2 control-label">Category</label>
+						<div class="col-sm-9">
+							<select class="form-control" id="category" name="category">
+								{% for cat in categories %}
+									{% if cat.id == sel_category %}
+									<option value="{{cat.id}}" selected>{{cat.name}}</option>
+									{% else %}
+									<option value="{{cat.id}}">{{cat.name}}</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					{% if cat_error %}
+					<div class="col-sm-offset-2 col-sm-9 alert alert-danger" role="alert">
+						{{cat_error}}
+					</div>
+					{% endif %}
+					<div class="form-group">
+						<label for="description" id="description" class="col-sm-2 control-label">Description</label>
+						<div class="col-sm-9">
+							<textarea class="form-control" rows="3" name="description">{{item_description}}</textarea>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">Submit</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

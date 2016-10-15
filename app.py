@@ -30,6 +30,16 @@ def get_category_by_id(id):
 	"""Retrieves a category by id"""
 	return session.query(Category).filter(Category.id==id).first()
 
+def get_category_by_name(name):
+	"""Retrieves Category object by name
+
+	Args:
+		name: name of the category to retrieve
+
+	Returns:
+		The Category for the passed name or None if none exist"""
+	return session.query(Category).filter(Category.name==name).first()
+
 def get_all_items_by_category(category):
 	"""Retrieves all sub-items in the database"""
 	return (session.query(CategorySubItem)
@@ -231,13 +241,13 @@ def NewCategory():
 			return redirect('/', 302)
 
 
-@app.route('/category/<int:category_id>')
-def CategoryPage(category_id):
-	category = get_category_by_id(category_id)
+@app.route('/category/<string:category_name>')
+def CategoryPage(category_name):
+	category = get_category_by_name(category_name)
 	if category:
 		is_logged_in, name, picture = get_user_details()
 		categories = get_all_categories()
-		items = get_all_items_by_category(category_id)
+		items = get_all_items_by_category(category.id)
 		return render_template('category.html',
 								client_id=CLIENT_ID,
 								picture=picture,
@@ -302,6 +312,7 @@ def NewItem():
 			sel_category = request.args.get('category')
 			if not sel_category:
 				sel_category = categories[0].id
+			print(sel_category)
 			return render_template('newitem.html',
 								picture=login_session['picture'],
 								name=login_session['name'],
@@ -310,7 +321,7 @@ def NewItem():
 								item_name='',
 								item_description='',
 								categories=categories,
-								sel_category=sel_category)
+								sel_category=int(sel_category))
 		else:
 			name = request.form['itemname']
 			category = request.form['category']
@@ -336,8 +347,6 @@ def NewItem():
 			session.add(new_item)
 			session.commit()
 			return redirect('/category/' + category, 302)
-
-
 
 
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"

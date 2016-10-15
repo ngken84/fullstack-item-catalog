@@ -165,6 +165,37 @@ def GoogleDisconnect():
 			400)
 
 
+def get_category_name_error(name, is_new, id):
+	"""Checks a category name for errors
+
+	Args:
+		name: category name to check
+		is_new: is it a new category
+		id: if it is not a new category, the existing category id
+
+	Returns:
+		An error string if it is an invalid category name. None if there are no
+		errors"""
+	if not name:
+		return "Please enter a category name"
+	elif len(name) > 40:
+		return 'Category name must be under 40 characters'
+	if is_new:
+		existing_cat = (session.query(Category)
+			.filter(Category.name==name).first())
+		if existing_cat:
+			return 'Category name already exists!'
+	else:
+		existing_cat = (session.query(Category)
+			.filter(Category.id!=id)
+			.filter(Category.name==name)
+			.first())
+		if existing_cat:
+			return 'Category name is already in use'
+	return None
+
+
+
 @app.route("/newcategory", methods=['GET', 'POST'])
 def NewCategory():
 	if 'credentials' not in login_session:
@@ -182,7 +213,8 @@ def NewCategory():
 		else:
 			name = request.form['categoryname']
 			desc = request.form['description']
-			if not name:
+			name_error = get_category_name_error(name, True, 0)
+			if name_error:
 				return render_template('newcategory.html',
 								picture=login_session['picture'],
 								name=login_session['name'],
@@ -190,28 +222,7 @@ def NewCategory():
 								client_id=CLIENT_ID,
 								category_name='',
 								category_description=desc,
-								name_error='Please enter a name.')
-			existing_cat = (session.query(Category)
-				.filter(Category.name==name).first())
-			if len(name) > 40:
-				return render_template('newcategory.html',
-								picture=login_session['picture'],
-								name=login_session['name'],
-								logged_in=True,
-								client_id=CLIENT_ID,
-								category_name=name,
-								category_description=desc,
-								name_error=
-									'Category name must be under 40 characters')
-			if existing_cat:
-				return render_template('newcategory.html',
-								picture=login_session['picture'],
-								name=login_session['name'],
-								logged_in=True,
-								client_id=CLIENT_ID,
-								category_name=name,
-								category_description=desc,
-								name_error='Category already exists')
+								name_error=name_error)
 			new_category = Category(name=name,
 									description=desc,
 									user_id=login_session['id'])
@@ -246,7 +257,6 @@ def get_item_name_error(name, category_id, is_new, id):
 		return "Please enter a name for the item"
 	elif len(name) > 40:
 		return "Item name must not exceed 40 characters"
-	print(name)
 	if is_new:
 		item = (session.query(CategorySubItem)
 					.filter(CategorySubItem.category_id == category_id)
@@ -265,9 +275,15 @@ def get_item_name_error(name, category_id, is_new, id):
 	return None
 
 def get_category_error(category):
-	"""Determines if there is an error with the category id for a new or
-	existing item. Returns an error string if an error exists, returns None if
-	no problems exist"""
+	"""Determines if there is an error with the passed category name for a new
+	or existing item.
+
+	Args:
+		category: name of the category
+
+	Returns:
+		Returns an error string if an error exists, returns None if no
+		problems exist"""
 	if not category:
 		return "Please select a category"
 	cat = get_category_by_id(category)
@@ -298,7 +314,6 @@ def NewItem():
 		else:
 			name = request.form['itemname']
 			category = request.form['category']
-			print(category)
 			description = request.form['description']
 			name_error = get_item_name_error(name, category, True, 0)
 			category_error = get_category_error(category)

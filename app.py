@@ -157,6 +157,7 @@ def GoogleDisconnect():
 		del login_session['email']
 		del login_session['picture']
 		del login_session['name']
+		del login_session['id']
 		return generate_json_response('Successfully disconnected', 200)
 	else:
 		return generate_json_response('Failed to revoke token for given user.',
@@ -237,13 +238,50 @@ def CategoryPage(category_id):
 	return redirect('/', 302)
 
 
+def get_item_name_error(name, category_id, is_new, id):
+	"""Takes a name and determines and returns an error message if there is
+	anything wrong with it. Otherwise returns None"""
+	if not name:
+		return "Please enter a name for the item"
+	elif len(name) > 40:
+		return "Item name must not exceed 40 characters"
+	print(name)
+	if is_new:
+		item = (session.query(CategorySubItem)
+					.filter(CategorySubItem.category_id == category_id)
+					.filter(CategorySubItem.name == name)
+					.first())
+		if item:
+			return "Item already exists with the same name in that category!"
+	else:
+		item = (session.query(CategorySubItem)
+					.filter(CategorySubItem.category_id == category_id)
+					.filter(CategorySubItem.id != id)
+					.filter(CategorySubItem.name == name)
+					.first())
+		if item:
+			return "Item already exists with the same name in that category"
+	return None
+
+def get_category_error(category):
+	"""Determines if there is an error with the category id for a new or
+	existing item. Returns an error string if an error exists, returns None if
+	no problems exist"""
+	if not category:
+		return "Please select a category"
+	cat = get_category_by_id(category)
+	if not cat:
+		return "Category does not exist"
+	return None
+
+
 @app.route('/newitem', methods=['GET', 'POST'])
 def NewItem():
 	if 'credentials' not in login_session:
 		return redirect('/', 302)
 	else:
+		categories = get_all_categories()
 		if request.method == 'GET':
-			categories = get_all_categories()
 			sel_category = request.args.get('category')
 			if not sel_category:
 				sel_category = categories[0].id
@@ -254,9 +292,37 @@ def NewItem():
 								client_id=CLIENT_ID,
 								item_name='',
 								item_description='',
-								name_error=None,
 								categories=categories,
 								sel_category=sel_category)
+		else:
+			name = request.form['itemname']
+			category = request.form['category']
+			print(category)
+			description = request.form['description']
+			name_error = get_item_name_error(name, category, True, 0)
+			category_error = get_category_error(category)
+			if name_error or category_error:
+				return render_template('newitem.html',
+								picture=login_session['picture'],
+								name=login_session['name'],
+								logged_in=True,
+								client_id=CLIENT_ID,
+								item_name=name,
+								item_description=description,
+								categories=categories,
+								sel_category=category,
+								name_error=name_error,
+								cat_error=category_error)
+			new_item = CategorySubItem(name=name,
+										description=description,
+										category_id=category,
+										user_id=login_session['id'])
+			session.add(new_item)
+			session.commit()
+			return redirect('/category/' + category, 302)
+
+
+
 
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"
 

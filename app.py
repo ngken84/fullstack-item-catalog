@@ -423,6 +423,11 @@ def ItemDeletePage(item_id):
 						name=login_session['name'],
 						picture=login_session['picture'],
 						curr_item=item)
+	else:
+		category = item.category_id
+		session.delete(item)
+		session.commit()
+		return redirect('/category/%s' % category, 302)
 
 
 

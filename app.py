@@ -258,6 +258,7 @@ def CategoryPage(category_id):
 								categories=categories)
 	return redirect('/', 302)
 
+
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def CategoryEditPage(category_id):
 	if 'credentials' not in login_session:
@@ -274,6 +275,25 @@ def CategoryEditPage(category_id):
 							category_name=category.name,
 							category_description=category.description,
 							name_error=None)
+	else:
+		name = request.form['categoryname']
+		desc = request.form['description']
+		name_error = get_category_name_error(name, False, category.id)
+		if name_error:
+			return render_template('editcategory.html',
+								picture=login_session['picture'],
+								name=login_session['name'],
+								logged_in=True,
+								client_id=CLIENT_ID,
+								category_name=name,
+								category_description=desc,
+								name_error=name_error)
+		category.name = name
+		category.description = desc
+		session.add(category)
+		session.commit()
+		return redirect('/category/%s' % category.id, 302)
+
 
 def get_item_name_error(name, category_id, is_new, id):
 	"""Takes a name and determines and returns an error message if there is

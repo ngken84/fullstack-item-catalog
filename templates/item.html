@@ -10,6 +10,20 @@
 				<blockquote>
 					{{curr_item.description}}
 				</blockquote>
+				{% if logged_in %}
+				<div class="row">
+					<div class="col-md-12 text-right">
+						<ul class="list-unstyled list-inline">
+							<li>
+								<a href="{{url_for('ItemEditPage', item_id=curr_item.id)}}">edit</span></a>
+							</li>
+							<li>
+								<a href="#">delete</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				{% endif %}
 			</div>
 		</div>
 		<div class="col-md-3">

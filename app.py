@@ -306,47 +306,46 @@ def get_category_error(category):
 def NewItem():
 	if 'credentials' not in login_session:
 		return redirect('/', 302)
+	categories = get_all_categories()
+	if request.method == 'GET':
+		sel_category = request.args.get('category')
+		if not sel_category:
+			sel_category = categories[0].id
+		print(sel_category)
+		return render_template('newitem.html',
+							picture=login_session['picture'],
+							name=login_session['name'],
+							logged_in=True,
+							client_id=CLIENT_ID,
+							item_name='',
+							item_description='',
+							categories=categories,
+							sel_category=int(sel_category))
 	else:
-		categories = get_all_categories()
-		if request.method == 'GET':
-			sel_category = request.args.get('category')
-			if not sel_category:
-				sel_category = categories[0].id
-			print(sel_category)
+		name = request.form['itemname']
+		category = request.form['category']
+		description = request.form['description']
+		name_error = get_item_name_error(name, category, True, 0)
+		category_error = get_category_error(category)
+		if name_error or category_error:
 			return render_template('newitem.html',
-								picture=login_session['picture'],
-								name=login_session['name'],
-								logged_in=True,
-								client_id=CLIENT_ID,
-								item_name='',
-								item_description='',
-								categories=categories,
-								sel_category=int(sel_category))
-		else:
-			name = request.form['itemname']
-			category = request.form['category']
-			description = request.form['description']
-			name_error = get_item_name_error(name, category, True, 0)
-			category_error = get_category_error(category)
-			if name_error or category_error:
-				return render_template('newitem.html',
-								picture=login_session['picture'],
-								name=login_session['name'],
-								logged_in=True,
-								client_id=CLIENT_ID,
-								item_name=name,
-								item_description=description,
-								categories=categories,
-								sel_category=category,
-								name_error=name_error,
-								cat_error=category_error)
-			new_item = CategorySubItem(name=name,
-										description=description,
-										category_id=category,
-										user_id=login_session['id'])
-			session.add(new_item)
-			session.commit()
-			return redirect('/category/' + category, 302)
+							picture=login_session['picture'],
+							name=login_session['name'],
+							logged_in=True,
+							client_id=CLIENT_ID,
+							item_name=name,
+							item_description=description,
+							categories=categories,
+							sel_category=category,
+							name_error=name_error,
+							cat_error=category_error)
+		new_item = CategorySubItem(name=name,
+									description=description,
+									category_id=category,
+									user_id=login_session['id'])
+		session.add(new_item)
+		session.commit()
+		return redirect('/category/' + category, 302)
 
 
 @app.route('/item/<int:item_id>')
@@ -367,6 +366,30 @@ def ItemPage(item_id):
 								curr_item=item,
 								items=items)
 	return redirect('/', 302)
+
+
+@app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
+def ItemEditPage(item_id):
+	if 'credentials' not in login_session:
+		return redirect(url_for('ItemPage', item_id=item_id), 302)
+	categories = get_all_categories()
+	if request.method == 'GET':
+		item = get_item_by_id(item_id)
+		if not item:
+			return redirect('/', 302)
+		return render_template('edititem.html',
+							logged_in=True,
+							name=login_session['name'],
+							picture=login_session['picture'],
+							item_name=item.name,
+							sel_category=item.category_id,
+							item_description=item.description,
+							categories=categories)
+
+
+
+
+
 
 
 

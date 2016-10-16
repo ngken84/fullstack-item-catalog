@@ -45,10 +45,9 @@ def get_all_items_by_category(category):
 	return (session.query(CategorySubItem)
 				.filter(CategorySubItem.category_id==category).all())
 
-def get_item_by_name(cat_id, name):
+def get_item_by_id(item_id):
 	return (session.query(CategorySubItem)
-				.filter(CategorySubItem.category_id==cat_id)
-				.filter(CategorySubItem.name==name).first())
+				.filter(CategorySubItem.id==item_id).first())
 
 def get_user_details():
 	""" Retrieves the user's details if they are logged in"""
@@ -242,9 +241,9 @@ def NewCategory():
 			return redirect('/', 302)
 
 
-@app.route('/category/<string:category_name>')
-def CategoryPage(category_name):
-	category = get_category_by_name(category_name)
+@app.route('/category/<int:category_id>')
+def CategoryPage(category_id):
+	category = get_category_by_id(category_id)
 	if category:
 		is_logged_in, name, picture = get_user_details()
 		categories = get_all_categories()
@@ -350,12 +349,12 @@ def NewItem():
 			return redirect('/category/' + category, 302)
 
 
-@app.route('/category/<string:category_name>/item/<string:item_name>')
-def ItemPage(category_name, item_name):
-	category = get_category_by_name(category_name)
-	if category:
-		item = get_item_by_name(category.id, item_name)
-		if item:
+@app.route('/item/<int:item_id>')
+def ItemPage(item_id):
+	item = get_item_by_id(item_id)
+	if item:
+		category = get_category_by_id(item.category_id)
+		if category:
 			is_logged_in, name, picture = get_user_details()
 			return render_template('item.html',
 								logged_in=is_logged_in,

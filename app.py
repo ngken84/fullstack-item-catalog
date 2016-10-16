@@ -345,7 +345,7 @@ def NewItem():
 									user_id=login_session['id'])
 		session.add(new_item)
 		session.commit()
-		return redirect('/category/' + category, 302)
+		return redirect('/category/%s' % category, 302)
 
 
 @app.route('/item/<int:item_id>')
@@ -371,12 +371,12 @@ def ItemPage(item_id):
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def ItemEditPage(item_id):
 	if 'credentials' not in login_session:
-		return redirect(url_for('ItemPage', item_id=item_id), 302)
+		return redirect('/item/' + item_id, 302)
 	categories = get_all_categories()
+	item = get_item_by_id(item_id)
+	if not item:
+		return redirect('/', 302)
 	if request.method == 'GET':
-		item = get_item_by_id(item_id)
-		if not item:
-			return redirect('/', 302)
 		return render_template('edititem.html',
 							logged_in=True,
 							name=login_session['name'],
@@ -385,9 +385,44 @@ def ItemEditPage(item_id):
 							sel_category=item.category_id,
 							item_description=item.description,
 							categories=categories)
+	else:
+		name = request.form['itemname']
+		category = request.form['category']
+		description = request.form['description']
+		name_error = get_item_name_error(name, category, False, item_id)
+		category_error = get_category_error(category)
+		if category_error or name_error:
+			return render_template('edititem.html',
+							logged_in=True,
+							name=login_session['name'],
+							picture=login_session['picture'],
+							item_name=name,
+							sel_category=category,
+							item_description=description,
+							categories=categories,
+							name_error=name_error,
+							cat_error=category_error)
+		item.name=name
+		item.description=description
+		item.category_id=category
+		session.add(item)
+		session.commit()
+		return redirect('/item/%s' % item_id, 302)
 
 
-
+@app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
+def ItemDeletePage(item_id):
+	if 'credentials' not in login_session:
+		return redirect('/item/%s' % item_id, 302)
+	item = get_item_by_id(item_id)
+	if not item:
+		return redirect('/', 302)
+	if request.method == 'GET':
+		return render_template('deleteitem.html',
+						logged_in=True,
+						name=login_session['name'],
+						picture=login_session['picture'],
+						curr_item=item)
 
 
 

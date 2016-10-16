@@ -1,0 +1,30 @@
+{% extends "banner.html" %}
+{% block title %}Delete {{curr_item.name}}{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="col-md-12">
+			<div class="well">
+				<h2>Delete {{curr_item.name}}?</h2>
+				<blockquote>
+					{{curr_item.description}}
+				</blockquote>
+				<div class="row">
+					<div class="col-md-12 text-center">
+						<form method="post">
+							<ul class="list-inline list-unstyled">
+								<li>
+									<button type="submit" class="btn btn-default">Delete</button>
+								</li>
+								<li>
+									<a href="{{url_for('ItemPage', item_id=curr_item.id)}}" class="btn btn-default">Cancel</a>
+								</li>
+							</ul>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

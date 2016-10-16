@@ -10,9 +10,23 @@
 		<div class="col-md-9">
 			<div class="well">
 				<h2>{{curr_category.name}}</h2>
+				{% if curr_category.description %}
 				<blockquote>
 					{{curr_category.description}}
 				</blockquote>
+				{% endif %}
+				{% if logged_in %}
+				<div class="col-md-12 text-right">
+					<ul class="list-inline list-unstyled">
+						<li>
+							<a href="{{url_for('CategoryEditPage', category_id=curr_category.id)}}">edit</a>
+						</li>
+						<li>
+							<a href="#">delete</a>
+						</li>
+					</ul>
+				</div>
+				{% endif %}
 				<h3>Items</h3>
 				{% if not items %}
 				<div class="row">

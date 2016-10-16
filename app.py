@@ -210,35 +210,34 @@ def get_category_name_error(name, is_new, id):
 def NewCategory():
 	if 'credentials' not in login_session:
 		return redirect('/', 302)
+	if request.method == 'GET':
+		return render_template('newcategory.html',
+							picture=login_session['picture'],
+							name=login_session['name'],
+							logged_in=True,
+							client_id=CLIENT_ID,
+							category_name='',
+							category_description='',
+							name_error=None)
 	else:
-		if request.method == 'GET':
+		name = request.form['categoryname']
+		desc = request.form['description']
+		name_error = get_category_name_error(name, True, 0)
+		if name_error:
 			return render_template('newcategory.html',
-								picture=login_session['picture'],
-								name=login_session['name'],
-								logged_in=True,
-								client_id=CLIENT_ID,
-								category_name='',
-								category_description='',
-								name_error=None)
-		else:
-			name = request.form['categoryname']
-			desc = request.form['description']
-			name_error = get_category_name_error(name, True, 0)
-			if name_error:
-				return render_template('newcategory.html',
-								picture=login_session['picture'],
-								name=login_session['name'],
-								logged_in=True,
-								client_id=CLIENT_ID,
-								category_name='',
-								category_description=desc,
-								name_error=name_error)
-			new_category = Category(name=name,
-									description=desc,
-									user_id=login_session['id'])
-			session.add(new_category)
-			session.commit()
-			return redirect('/', 302)
+							picture=login_session['picture'],
+							name=login_session['name'],
+							logged_in=True,
+							client_id=CLIENT_ID,
+							category_name='',
+							category_description=desc,
+							name_error=name_error)
+		new_category = Category(name=name,
+								description=desc,
+								user_id=login_session['id'])
+		session.add(new_category)
+		session.commit()
+		return redirect('/', 302)
 
 
 @app.route('/category/<int:category_id>')
@@ -259,6 +258,22 @@ def CategoryPage(category_id):
 								categories=categories)
 	return redirect('/', 302)
 
+@app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
+def CategoryEditPage(category_id):
+	if 'credentials' not in login_session:
+		return redirect('/category/%s' % category_id, 302)
+	category = get_category_by_id(category_id)
+	if not category:
+		return redirect('/', 302)
+	if request.method == 'GET':
+		return render_template('editcategory.html',
+							picture=login_session['picture'],
+							name=login_session['name'],
+							logged_in=True,
+							client_id=CLIENT_ID,
+							category_name=category.name,
+							category_description=category.description,
+							name_error=None)
 
 def get_item_name_error(name, category_id, is_new, id):
 	"""Takes a name and determines and returns an error message if there is
@@ -428,8 +443,6 @@ def ItemDeletePage(item_id):
 		session.delete(item)
 		session.commit()
 		return redirect('/category/%s' % category, 302)
-
-
 
 
 

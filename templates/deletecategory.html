@@ -1,0 +1,32 @@
+{% extends "banner.html" %}
+{% block title %}Delete {{category.name}}{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="col-md-12">
+			<div class="well">
+				<h2>Delete {{category.name}}?</h2>
+				{% if category.description %}
+				<blockquote>
+					{{category.description}}
+				</blockquote>
+				{% endif %}
+				<div class="row">
+					<div class="col-md-12 text-center">
+						<form method="post">
+							<ul class="list-inline list-unstyled">
+								<li>
+									<button type="submit" class="btn btn-default">Delete</button>
+								</li>
+								<li>
+									<a href="{{url_for('MainPage')}}" class="btn btn-default">Cancel</a>
+								</li>
+							</ul>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

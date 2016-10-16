@@ -295,6 +295,28 @@ def CategoryEditPage(category_id):
 		return redirect('/category/%s' % category.id, 302)
 
 
+@app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
+def CategoryDeletePage(category_id):
+	if 'credentials' not in login_session:
+		return redirect('/category/%s' % category_id, 302)
+	category = get_category_by_id(category_id)
+	if request.method == 'GET':
+		return render_template('deletecategory.html',
+							picture=login_session['picture'],
+							name=login_session['name'],
+							logged_in=True,
+							client_id=CLIENT_ID,
+							category=category,
+							name_error=None)
+	else:
+		items = get_all_items_by_category(category.id)
+		for item in items:
+			session.delete(item)
+		session.delete(category)
+		session.commit()
+		return redirect("/", 302)
+
+
 def get_item_name_error(name, category_id, is_new, id):
 	"""Takes a name and determines and returns an error message if there is
 	anything wrong with it. Otherwise returns None"""

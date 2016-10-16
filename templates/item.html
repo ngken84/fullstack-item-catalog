@@ -1,0 +1,22 @@
+{% extends "banner.html" %}
+{% from 'macros.html' import categorybar %}
+{% block title %}{{curr_item.name}}{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="col-md-9">
+			<div class="well">
+				<h2>{{curr_item.name}}</h2>
+				<blockquote>
+					{{curr_item.description}}
+				</blockquote>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="well">
+				<h3>{{category.name}}</h3>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

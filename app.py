@@ -45,9 +45,10 @@ def get_all_items_by_category(category):
 	return (session.query(CategorySubItem)
 				.filter(CategorySubItem.category_id==category).all())
 
-def get_item_by_id(id):
-	"""Retrieves sub-item by id"""
-	return session.query(CategorySubItem).filter(CategorySubItem.id==id).first()
+def get_item_by_name(cat_id, name):
+	return (session.query(CategorySubItem)
+				.filter(CategorySubItem.category_id==cat_id)
+				.filter(CategorySubItem.name==name).first())
 
 def get_user_details():
 	""" Retrieves the user's details if they are logged in"""
@@ -347,6 +348,25 @@ def NewItem():
 			session.add(new_item)
 			session.commit()
 			return redirect('/category/' + category, 302)
+
+
+@app.route('/category/<string:category_name>/item/<string:item_name>')
+def ItemPage(category_name, item_name):
+	category = get_category_by_name(category_name)
+	if category:
+		item = get_item_by_name(category.id, item_name)
+		if item:
+			is_logged_in, name, picture = get_user_details()
+			return render_template('item.html',
+								logged_in=is_logged_in,
+								name=name,
+								picture=picture,
+								client_id=CLIENT_ID,
+								forgery_token=generate_forgery_token(),
+								category=category,
+								curr_item=item)
+	return redirect('/', 302)
+
 
 
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"

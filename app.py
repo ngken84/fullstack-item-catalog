@@ -356,6 +356,7 @@ def ItemPage(item_id):
 		category = get_category_by_id(item.category_id)
 		if category:
 			is_logged_in, name, picture = get_user_details()
+			items = get_all_items_by_category(category.id)
 			return render_template('item.html',
 								logged_in=is_logged_in,
 								name=name,
@@ -363,7 +364,8 @@ def ItemPage(item_id):
 								client_id=CLIENT_ID,
 								forgery_token=generate_forgery_token(),
 								category=category,
-								curr_item=item)
+								curr_item=item,
+								items=items)
 	return redirect('/', 302)
 
 

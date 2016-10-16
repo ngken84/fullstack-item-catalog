@@ -15,6 +15,14 @@
 		<div class="col-md-3">
 			<div class="well">
 				<h3>{{category.name}}</h3>
+				<ul class="list-unstyled">
+					{% for item in items %}
+					<li>
+						<a href="{{url_for('ItemPage', item_id=item.id)}}">{{item.name}}</a>
+					</li>
+					{% endfor %}
+				</ul>
+
 			</div>
 		</div>
 	</div>

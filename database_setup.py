@@ -21,6 +21,15 @@ class Category(Base):
 	description = Column(Text)
 	user_id = Column(Integer, ForeignKey('user.id'))
 	created = Column(DateTime, default=datetime.datetime.utcnow)
+	children = relationship("CategorySubItem", back_populates="parent")
+
+	@property
+	def serialize(self):
+		return {
+			'id': self.id,
+			'name': self.name,
+			'description': self.description
+		}
 
 
 class CategorySubItem(Base):
@@ -31,6 +40,15 @@ class CategorySubItem(Base):
 	category_id = Column(Integer, ForeignKey('category.id'))
 	user_id = Column(Integer, ForeignKey('user.id'))
 	created = Column(DateTime, default=datetime.datetime.utcnow)
+	parent = relationship("Category", back_populates="children")
+
+	@property
+	def serialize(self):
+		return {
+			'id': self.id,
+			'name': self.name,
+			'description': description
+		}
 
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.create_all(engine)

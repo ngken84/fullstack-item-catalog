@@ -1,6 +1,13 @@
 {% extends "edititemtemplate.html" %}
 {% block title %}New Item{% endblock %}
-
+{% block breadcrumb %}
+<div class="container">
+	<ol class="breadcrumb my-breadcrumb">
+		<li><a href="{{url_for('MainPage')}}">Home</a></li>
+		<li>New Item</li>
+	</ol>
+</div>
+{% endblock %}
 {% block pageheader %}
 New Item
 {% endblock %}

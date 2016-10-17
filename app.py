@@ -271,6 +271,7 @@ def CategoryEditPage(category_id):
 							picture=login_session['picture'],
 							name=login_session['name'],
 							logged_in=True,
+							category_id=category_id,
 							client_id=CLIENT_ID,
 							category_name=category.name,
 							category_description=category.description,
@@ -285,6 +286,7 @@ def CategoryEditPage(category_id):
 								name=login_session['name'],
 								logged_in=True,
 								client_id=CLIENT_ID,
+								category_id=category_id,
 								category_name=name,
 								category_description=desc,
 								name_error=name_error)
@@ -368,7 +370,6 @@ def NewItem():
 		sel_category = request.args.get('category')
 		if not sel_category:
 			sel_category = categories[0].id
-		print(sel_category)
 		return render_template('newitem.html',
 							picture=login_session['picture'],
 							name=login_session['name'],
@@ -436,6 +437,7 @@ def ItemEditPage(item_id):
 							logged_in=True,
 							name=login_session['name'],
 							picture=login_session['picture'],
+							curr_item=item,
 							item_name=item.name,
 							sel_category=item.category_id,
 							item_description=item.description,
@@ -452,6 +454,7 @@ def ItemEditPage(item_id):
 							name=login_session['name'],
 							picture=login_session['picture'],
 							item_name=name,
+							curr_item=item,
 							sel_category=category,
 							item_description=description,
 							categories=categories,

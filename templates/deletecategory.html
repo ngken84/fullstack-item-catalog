@@ -1,6 +1,14 @@
 {% extends "banner.html" %}
 {% block title %}Delete {{category.name}}{% endblock %}
-
+{% block breadcrumb %}
+<div class="container">
+	<ol class="breadcrumb my-breadcrumb">
+		<li><a href="{{url_for('MainPage')}}">Home</a></li>
+		<li><a href="{{url_for('CategoryPage', category_id=category.id)}}">{{category.name}}</a></li>
+		<li>Delete {{category.name}}</li>
+	</ol>
+</div>
+{% endblock %}
 {% block content %}
 	<div class="container">
 		<div class="col-md-12">
@@ -19,7 +27,7 @@
 									<button type="submit" class="btn btn-default">Delete</button>
 								</li>
 								<li>
-									<a href="{{url_for('MainPage')}}" class="btn btn-default">Cancel</a>
+									<a href="{{url_for('CategoryPage', category_id=category.id)}}" class="btn btn-default">Cancel</a>
 								</li>
 							</ul>
 						</form>

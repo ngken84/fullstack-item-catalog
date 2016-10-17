@@ -1,7 +1,14 @@
 {% extends "banner.html" %}
 {% from 'macros.html' import categorybar %}
 {% block title %}{{curr_category.name}}{% endblock %}
-
+{% block breadcrumb %}
+<div class="container">
+	<ol class="breadcrumb my-breadcrumb">
+		<li><a href="{{url_for('MainPage')}}">Home</a></li>
+		<li>{{curr_category.name}}</li>
+	</ol>
+</div>
+{% endblock %}
 {% block content %}
 	<div class="container">
 		<div class="col-md-3">
@@ -38,7 +45,7 @@
 				<div class="row">
 					{% for item in items %}
 					<div class="col-sm-6 col-md-4 col-lg-3">
-						<a href="{{url_for('ItemPage', item_id=item.id)}}">
+						<a class="no-dec" href="{{url_for('ItemPage', item_id=item.id)}}">
 							<div class="panel panel-default">
 								<div class="panel-heading">{{item.name}}</div>
 								<div class="panel-body">{{item.description}}</div>

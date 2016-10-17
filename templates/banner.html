@@ -29,7 +29,7 @@
 	<div class="container-fluid site-banner">
 		<div class="container">
 			<div class="col-md-4 col-sm-5 col-xs-6">
-				<a href="{{url_for('MainPage')}}" class="header-link"><h1>Item Catalog</h1></a>
+				<a href="{{url_for('MainPage')}}" class="header-link no-dec"><h1>Item Catalog</h1></a>
 			</div>
 			<div class="col-md-8 col-sm-7 col-xs-6 text-right">
 				{% if not logged_in %}
@@ -67,6 +67,8 @@
 			</div>
 		</div>
 	</div>
+	{% block breadcrumb %}
+	{% endblock %}
 	{% block content %}
 	{% endblock %}
 {% endblock %}

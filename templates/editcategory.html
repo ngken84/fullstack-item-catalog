@@ -1,3 +1,12 @@
 {% extends "editcategorytemplate.html" %}
 {% block title %}Edit Category {{category_name}}{% endblock %}
 {% block pageheader %}Edit Category{% endblock %}
+{% block breadcrumb %}
+<div class="container">
+	<ol class="breadcrumb my-breadcrumb">
+		<li><a href="{{url_for('MainPage')}}">Home</a></li>
+		<li><a href="{{url_for('CategoryPage', category_id=category_id)}}">{{category_name}}</a></li>
+		<li>Edit {{category_name}}</li>
+	</ol>
+</div>
+{% endblock %}

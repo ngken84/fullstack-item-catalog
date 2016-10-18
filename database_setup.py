@@ -47,7 +47,12 @@ class CategorySubItem(Base):
 		return {
 			'id': self.id,
 			'name': self.name,
-			'description': description
+			'description': self.description,
+			'category' : {
+				'id': self.parent.id,
+				'name': self.parent.name,
+				'description': self.parent.description
+			}
 		}
 
 engine = create_engine('sqlite:///catalog.db')

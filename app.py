@@ -1,4 +1,5 @@
 from flask import Flask, render_template, make_response, request, redirect
+from flask import jsonify
 from flask import session as login_session
 app = Flask(__name__)
 
@@ -259,6 +260,15 @@ def CategoryPage(category_id):
 	return redirect('/', 302)
 
 
+@app.route('/category/<int:category_id>/JSON')
+def CategoryJSON(category_id):
+	category = get_category_by_id(category_id)
+	if category:
+		return jsonify(category.serialize)
+	return redirect('/', 302)
+
+
+
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def CategoryEditPage(category_id):
 	if 'credentials' not in login_session:
@@ -421,6 +431,14 @@ def ItemPage(item_id):
 							category=item.parent,
 							curr_item=item,
 							items=items)
+	return redirect('/', 302)
+
+
+@app.route('/item/<int:item_id>/JSON')
+def ItemJSON(item_id):
+	item = get_item_by_id(item_id)
+	if item:
+		return jsonify(item.serialize)
 	return redirect('/', 302)
 
 

@@ -78,12 +78,16 @@ def MainPage():
 	token = generate_forgery_token()
 	is_logged_in, name, picture = get_user_details()
 	categories = get_all_categories()
+	items = (session.query(CategorySubItem)
+				.order_by(CategorySubItem.created.desc())
+				.limit(10).all())
 	return render_template('index.html',
 							picture=picture,
 							name=name,
 							logged_in=is_logged_in,
 							client_id=CLIENT_ID,
 							categories=categories,
+							items=items,
 							forgery_token=token)
 
 @app.route('/gconnect', methods=['POST'])

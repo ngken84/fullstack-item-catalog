@@ -24,8 +24,11 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 def get_all_categories():
-	"""Retrieves all categories in database"""
-	return session.query(Category).all()
+	"""Retrieves all categories in database
+
+	Returns:
+		All categories ordered by name"""
+	return session.query(Category).order_by(Category.name).all()
 
 def get_category_by_id(id):
 	"""Retrieves a category by id"""
@@ -42,11 +45,24 @@ def get_category_by_name(name):
 	return session.query(Category).filter(Category.name==name).first()
 
 def get_all_items_by_category(category):
-	"""Retrieves all sub-items in the database"""
+	"""Retrieves all sub-items in the database
+
+	Args:
+		category: name of categories to get all categories for
+
+	Returns:
+		All the items for passed category"""
 	return (session.query(CategorySubItem)
 				.filter(CategorySubItem.category_id==category).all())
 
 def get_item_by_id(item_id):
+	"""Retrieves a CategorySubItem by its key id
+
+	Args:
+		item_id: desired item's id
+
+	Returns:
+		The CategorySubItem with the passed id"""
 	return (session.query(CategorySubItem)
 				.filter(CategorySubItem.id==item_id).first())
 
@@ -58,8 +74,11 @@ def get_user_details():
 	return is_logged_in, None, None
 
 def generate_forgery_token():
-	""" generates and returns a 32 character string of letters and numbers to
-	be used as an anti forgery token"""
+	"""Generates and returns a 32 character string of letters and numbers to
+	be used as an anti forgery token
+
+	Returns:
+		A string 32 random characters"""
 	token = ''.join(random.choice(string.ascii_uppercase + string.digits)
 		for x in range(32))
 	login_session['state'] = token
@@ -67,7 +86,10 @@ def generate_forgery_token():
 
 
 def generate_json_response(text, code):
-	""" generates and returns a json response with text and code"""
+	"""Generates and returns a json response with text and code
+
+	Returns:
+		returns a response object with the passed text and code"""
 	response = make_response(json.dumps(text), code)
 	response.headers['Content-Type'] = 'application/json'
 	return response
@@ -75,6 +97,7 @@ def generate_json_response(text, code):
 
 @app.route('/')
 def MainPage():
+	"""The page handler for the first page"""
 	token = generate_forgery_token()
 	is_logged_in, name, picture = get_user_details()
 	categories = get_all_categories()
@@ -213,8 +236,12 @@ def get_category_name_error(name, is_new, id):
 
 @app.route("/newcategory", methods=['GET', 'POST'])
 def NewCategory():
+	"""Page handler for new category page. On GET displays a form to submit a
+	a new category. On POST, takes parameters and creates a new category"""
+	# must be logged in to view this page
 	if 'credentials' not in login_session:
 		return redirect('/', 302)
+	# If request is a GET render the new category page
 	if request.method == 'GET':
 		return render_template('newcategory.html',
 							picture=login_session['picture'],
@@ -224,9 +251,12 @@ def NewCategory():
 							category_name='',
 							category_description='',
 							name_error=None)
+	# If request is not a GET then attempt to create a new category
 	else:
 		name = request.form['categoryname']
 		desc = request.form['description']
+		# Check if there is an error. If exists, re-render page with error
+		# messages
 		name_error = get_category_name_error(name, True, 0)
 		if name_error:
 			return render_template('newcategory.html',
@@ -237,6 +267,7 @@ def NewCategory():
 							category_name='',
 							category_description=desc,
 							name_error=name_error)
+		# Everything checks out. Create a new category
 		new_category = Category(name=name,
 								description=desc,
 								user_id=login_session['id'])
@@ -247,6 +278,10 @@ def NewCategory():
 
 @app.route('/category/<int:category_id>')
 def CategoryPage(category_id):
+	"""Page handler for individual category page
+
+	Args:
+		category_id: The id for the category to display"""
 	category = get_category_by_id(category_id)
 	if category:
 		is_logged_in, name, picture = get_user_details()
@@ -266,6 +301,7 @@ def CategoryPage(category_id):
 
 @app.route('/category/<int:category_id>/JSON')
 def CategoryJSON(category_id):
+	"""Page handler for JSON version of category page"""
 	category = get_category_by_id(category_id)
 	if category:
 		return jsonify(category.serialize)
@@ -275,11 +311,18 @@ def CategoryJSON(category_id):
 
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def CategoryEditPage(category_id):
+	"""Page Handler for page that allows you to edit your category
+
+	Args:
+		category_id: ID for category that will be edited"""
+	# User can't view the page if they are not logged in
 	if 'credentials' not in login_session:
 		return redirect('/category/%s' % category_id, 302)
 	category = get_category_by_id(category_id)
+	# Check to ensure category exists
 	if not category:
 		return redirect('/', 302)
+	# If is a GET request, display edit category page.
 	if request.method == 'GET':
 		return render_template('editcategory.html',
 							picture=login_session['picture'],
@@ -290,6 +333,8 @@ def CategoryEditPage(category_id):
 							category_name=category.name,
 							category_description=category.description,
 							name_error=None)
+	# If is not a get, check to see if category is a valid category
+	# and create it or display errors.
 	else:
 		name = request.form['categoryname']
 		desc = request.form['description']
@@ -313,9 +358,15 @@ def CategoryEditPage(category_id):
 
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def CategoryDeletePage(category_id):
+	"""Page Handler for delete a category page
+
+	Args:
+		category_id: ID for category that page lets user delete"""
+	# Checks to ensure user is logged in
 	if 'credentials' not in login_session:
 		return redirect('/category/%s' % category_id, 302)
 	category = get_category_by_id(category_id)
+	# If is a GET request, display page that allows user to delete the category
 	if request.method == 'GET':
 		return render_template('deletecategory.html',
 							picture=login_session['picture'],
@@ -377,10 +428,13 @@ def get_category_error(category):
 
 @app.route('/newitem', methods=['GET', 'POST'])
 def NewItem():
+	"""Page Handler for page that allows user to create new items"""
+	# User must be logged in to view this page
 	if 'credentials' not in login_session:
 		return redirect('/', 302)
 	categories = get_all_categories()
 	if request.method == 'GET':
+		# If there is a passed then set that category as default category
 		sel_category = request.args.get('category')
 		if not sel_category:
 			sel_category = categories[0].id
@@ -393,6 +447,7 @@ def NewItem():
 							item_description='',
 							categories=categories,
 							sel_category=int(sel_category))
+	# If it is not a GET then assume a POST
 	else:
 		name = request.form['itemname']
 		category = request.form['category']
@@ -422,6 +477,10 @@ def NewItem():
 
 @app.route('/item/<int:item_id>')
 def ItemPage(item_id):
+	"""Page handler for an individual item
+
+	Args:
+		item_id : the key id for the item that is being displayed"""
 	item = get_item_by_id(item_id)
 	if item:
 		is_logged_in, name, picture = get_user_details()
@@ -440,6 +499,10 @@ def ItemPage(item_id):
 
 @app.route('/item/<int:item_id>/JSON')
 def ItemJSON(item_id):
+	"""Page handler for JSON version of the ItemPage
+
+	Args:
+		item_id : the key id for the item that is being displayed"""
 	item = get_item_by_id(item_id)
 	if item:
 		return jsonify(item.serialize)
@@ -448,6 +511,11 @@ def ItemJSON(item_id):
 
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def ItemEditPage(item_id):
+	"""Page handler for page to edit items
+
+	Args:
+		item_id : key id for item that is up for editing."""
+	# User must be logged in to reach this page
 	if 'credentials' not in login_session:
 		return redirect('/item/' + item_id, 302)
 	categories = get_all_categories()
@@ -464,6 +532,8 @@ def ItemEditPage(item_id):
 							sel_category=item.category_id,
 							item_description=item.description,
 							categories=categories)
+	# If it is not a GET, attempt to make edits to the item. If there is an
+	# error, re-render the page with an error message.
 	else:
 		name = request.form['itemname']
 		category = request.form['category']
@@ -492,6 +562,10 @@ def ItemEditPage(item_id):
 
 @app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def ItemDeletePage(item_id):
+	"""Page handler for page that allows user to delete a item
+
+	Args:
+		item_id : key id for item that up for deletion"""
 	if 'credentials' not in login_session:
 		return redirect('/item/%s' % item_id, 302)
 	item = get_item_by_id(item_id)

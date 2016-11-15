@@ -1,8 +1,7 @@
 from flask import Flask, render_template, make_response, request, redirect
 from flask import jsonify
 from flask import session as login_session
-app = Flask(__name__)
-
+from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, CategorySubItem
@@ -13,6 +12,8 @@ import httplib2
 import requests
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+
+app = Flask(__name__)
 
 CLIENT_ID = json.loads(
 	open('client_secrets.json', 'r').read())['web']['client_id']
@@ -233,14 +234,20 @@ def get_category_name_error(name, is_new, id):
 	return None
 
 
+def login_required(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if 'credentials' not in login_session:
+			return redirect('/')
+		return f(*args, **kwargs)
+	return decorated_function
+
 
 @app.route("/newcategory", methods=['GET', 'POST'])
+@login_required
 def NewCategory():
 	"""Page handler for new category page. On GET displays a form to submit a
 	a new category. On POST, takes parameters and creates a new category"""
-	# must be logged in to view this page
-	if 'credentials' not in login_session:
-		return redirect('/', 302)
 	# If request is a GET render the new category page
 	if request.method == 'GET':
 		return render_template('newcategory.html',

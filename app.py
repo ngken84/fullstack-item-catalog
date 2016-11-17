@@ -325,6 +325,9 @@ def CategoryEditPage(category_id):
 	# Check to ensure category exists
 	if not category:
 		return redirect('/', 302)
+	# Check to ensure user has rights to edit category
+	if category.user_id != login_session['id']:
+		return redirect('/', 302)
 	# If is a GET request, display edit category page.
 	if request.method == 'GET':
 		return render_template('editcategory.html',
@@ -367,6 +370,11 @@ def CategoryDeletePage(category_id):
 	Args:
 		category_id: ID for category that page lets user delete"""
 	category = get_category_by_id(category_id)
+	if not category:
+		return redirect('/', 302)
+	# Ensure user has rights to delete category
+	if category.user_id != login_session['id']:
+		return redirect('/', 302)
 	# If is a GET request, display page that allows user to delete the category
 	if request.method == 'GET':
 		return render_template('deletecategory.html',
@@ -519,6 +527,8 @@ def ItemEditPage(item_id):
 	item = get_item_by_id(item_id)
 	if not item:
 		return redirect('/', 302)
+	if item.user_id != login_session['id']:
+		return redirect('/', 302)
 	if request.method == 'GET':
 		return render_template('edititem.html',
 							logged_in=True,
@@ -567,6 +577,8 @@ def ItemDeletePage(item_id):
 	item = get_item_by_id(item_id)
 	if not item:
 		return redirect('/', 302)
+	if item.user_id != login_session['id']:
+		return redirect('/', 302)
 	if request.method == 'GET':
 		return render_template('deleteitem.html',
 						logged_in=True,
@@ -578,7 +590,6 @@ def ItemDeletePage(item_id):
 		session.delete(item)
 		session.commit()
 		return redirect('/category/%s' % category, 302)
-
 
 
 app.secret_key = "A980KJSasdkc9834KAXI9dfm32198D98cs8MDF0"

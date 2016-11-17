@@ -233,15 +233,14 @@ def get_category_name_error(name, is_new, id):
 			return 'Category name is already in use'
 	return None
 
-
 def login_required(f):
+	"""Decorator for Page Handlers that requires login authorization to view"""
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'credentials' not in login_session:
 			return redirect('/')
 		return f(*args, **kwargs)
 	return decorated_function
-
 
 @app.route("/newcategory", methods=['GET', 'POST'])
 @login_required
@@ -315,16 +314,13 @@ def CategoryJSON(category_id):
 	return redirect('/', 302)
 
 
-
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
+@login_required
 def CategoryEditPage(category_id):
 	"""Page Handler for page that allows you to edit your category
 
 	Args:
 		category_id: ID for category that will be edited"""
-	# User can't view the page if they are not logged in
-	if 'credentials' not in login_session:
-		return redirect('/category/%s' % category_id, 302)
 	category = get_category_by_id(category_id)
 	# Check to ensure category exists
 	if not category:
@@ -364,14 +360,12 @@ def CategoryEditPage(category_id):
 
 
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
+@login_required
 def CategoryDeletePage(category_id):
 	"""Page Handler for delete a category page
 
 	Args:
 		category_id: ID for category that page lets user delete"""
-	# Checks to ensure user is logged in
-	if 'credentials' not in login_session:
-		return redirect('/category/%s' % category_id, 302)
 	category = get_category_by_id(category_id)
 	# If is a GET request, display page that allows user to delete the category
 	if request.method == 'GET':
@@ -434,11 +428,9 @@ def get_category_error(category):
 
 
 @app.route('/newitem', methods=['GET', 'POST'])
+@login_required
 def NewItem():
 	"""Page Handler for page that allows user to create new items"""
-	# User must be logged in to view this page
-	if 'credentials' not in login_session:
-		return redirect('/', 302)
 	categories = get_all_categories()
 	if request.method == 'GET':
 		# If there is a passed then set that category as default category
@@ -517,14 +509,12 @@ def ItemJSON(item_id):
 
 
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
+@login_required
 def ItemEditPage(item_id):
 	"""Page handler for page to edit items
 
 	Args:
 		item_id : key id for item that is up for editing."""
-	# User must be logged in to reach this page
-	if 'credentials' not in login_session:
-		return redirect('/item/' + item_id, 302)
 	categories = get_all_categories()
 	item = get_item_by_id(item_id)
 	if not item:
@@ -568,13 +558,12 @@ def ItemEditPage(item_id):
 
 
 @app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
+@login_required
 def ItemDeletePage(item_id):
 	"""Page handler for page that allows user to delete a item
 
 	Args:
 		item_id : key id for item that up for deletion"""
-	if 'credentials' not in login_session:
-		return redirect('/item/%s' % item_id, 302)
 	item = get_item_by_id(item_id)
 	if not item:
 		return redirect('/', 302)
